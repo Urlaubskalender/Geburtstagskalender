@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+<link href="https://cdn-icons-png.flaticon.com/512/869/869869.png" rel="icon" type="image/png"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Geburtstags-Kalender</title>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 1rem;
+    background: #1a1f2e;
+    color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .container {
+    width: 100%;
+    max-width: 1000px;
+    background: #252a3a;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    box-sizing: border-box;
+    border: 1px solid #3a4556;
+  }
+  h1, h3 {
+    color: #fbbf24;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Hamburger Menu */
+  .hamburger-menu {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+  }
+  .hamburger-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    transition: all 0.2s ease;
+  }
+  .hamburger-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+  }
+  .menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: #252a3a;
+    border: 1px solid #3a4556;
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    display: none;
+    min-width: 280px;
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  .menu-dropdown.show {
+    display: block;
+  }
+  .menu-item {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.25rem 0;
+    border: none;
+    background: #3a4556;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 6px;
+    color: #f0f0f0;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+  }
+  .menu-item:hover {
+    background: #4a5568;
+    transform: translateX(2px);
+  }
+  .menu-item.primary {
+    background: #3b82f6;
+    color: white;
+  }
+  .menu-item.primary:hover {
+    background: #2563eb;
+  }
+  .menu-item.success {
+    background: #10b981;
+    color: white;
+  }
+  .menu-item.success:hover {
+    background: #059669;
+  }
+  .menu-item.danger {
+    background: #ef4444;
+    color: white;
+  }
+  .menu-item.danger:hover {
+    background: #dc2626;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #f0f0f0;
+    background: #3a4556;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #4a5568;
+  }
+  .color-box {
+    width: 20px; 
+    height: 20px;
+    border-radius: 4px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Search container */
+  .search-container {
+    background: #3a4556;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #4a5568;
+  }
+
+  /* Birthday stats */
+  .birthday-stats {
+    background: #3a4556;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #4a5568;
+  }
+
+  .stat-value {
+    font-weight: 600;
+    color: #fbbf24;
+  }
+
+  /* Age display */
+  .age-display {
+    background: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .days-until {
+    background: #fbbf24;
+    color: #1a1f2e;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  /* Form styling */
+  input, textarea, select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #4a5568;
+    border-radius: 6px;
+    background: #252a3a;
+    color: #f0f0f0;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease;
+  }
+
+  button.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+  }
+  button.btn-primary:hover {
+    background-color: #2563eb;
+  }
+
+  button.btn-success {
+    background-color: #10b981;
+    color: white;
+  }
+  button.btn-success:hover {
+    background-color: #059669;
+  }
+
+  button.btn-danger {
+    background-color: #ef4444;
+    color: white;
+  }
+  button.btn-danger:hover {
+    background-color: #dc2626;
+  }
+
+  button.btn-secondary {
+    background-color: #6b7280;
+    color: white;
+  }
+  button.btn-secondary:hover {
+    background-color: #4b5563;
+  }
+
+  #calendar {
+    max-width: 1000px;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    background: #252a3a;
+    padding: 0.5rem;
+  }
+
+  /* Calendar dark theme */
+  .fc {
+    background: #252a3a;
+    color: #f0f0f0;
+  }
+
+  .fc-header-toolbar {
+    background: #252a3a;
+    padding: 1rem;
+  }
+
+  .fc-button {
+    background: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    color: white !important;
+  }
+
+  .fc-button:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+  }
+
+  .fc-button:disabled {
+    background: #6b7280 !important;
+    border-color: #6b7280 !important;
+  }
+
+  .fc-col-header-cell {
+    background: #3a4556;
+    border-color: #4a5568;
+  }
+
+  .fc-daygrid-day {
+    background: #252a3a;
+    border-color: #4a5568;
+  }
+
+  .fc-daygrid-day:hover {
+    background: #3a4556;
+  }
+
+  .fc-day-today {
+    background-color: #fbbf24 !important;
+    color: #1a1f2e !important;
+  }
+
+  .fc-event {
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    /* Fix for name overflow */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .fc-event.birthday-event {
+    background: #10b981;
+    color: white;
+  }
+
+  .fc-event.birthday-today {
+    background: #ef4444;
+    color: white;
+    animation: pulse 2s infinite;
+  }
+
+  .fc-event.birthday-upcoming {
+    background: #fbbf24;
+    color: #1a1f2e;
+  }
+
+  /* Name overflow fixes */
+  .fc-event-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  /* Birthday popover */
+  #birthday-popover {
+    position: fixed;
+    background: #252a3a;
+    border: 1px solid #3a4556;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1001;
+    border-radius: 8px;
+    min-width: 280px;
+    max-width: 320px;
+    box-sizing: border-box;
+    color: #f0f0f0;
+  }
+
+  #birthday-popover strong {
+    display: block;
+    margin-bottom: 1rem;
+    color: #fbbf24;
+    font-size: 1.1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  #birthday-popover button {
+    display: block;
+    width: 100%;
+    margin: 0.3rem 0;
+    padding: 0.4rem 0;
+    border-radius: 5px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+
+  /* Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+  }
+
+  .modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: #252a3a;
+    border: 1px solid #3a4556;
+    border-radius: 8px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+
+  .modal-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-title {
+    color: #fbbf24;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #f0f0f0;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Auth Message */
+  .auth-message-main {
+    text-align: center; 
+    color: #9ca3af; 
+    padding: 3rem;
+    background: #3a4556;
+    border-radius: 8px;
+    border: 1px solid #4a5568;
+  }
+
+  /* Birthday list item name fix */
+  .birthday-name {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+  }
+
+  /* Responsive Mobile Fixes */
+  @media (max-width: 768px) {
+    body {
+      padding: 0.5rem;
+      position: relative;
+    }
+    
+    .container {
+      padding: 1rem;
+      width: calc(100% - 1rem);
+      margin: 0;
+    }
+    
+    .hamburger-menu {
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+    
+    .menu-dropdown {
+      min-width: 250px;
+      max-width: calc(100vw - 2rem);
+      right: -0.5rem;
+    }
+    
+    .modal-content {
+      width: calc(100% - 2rem);
+      margin: 1rem;
+      padding: 1.5rem;
+    }
+    
+    .legend {
+      justify-content: center;
+      gap: 1rem;
+    }
+    
+    .legend-item {
+      font-size: 0.85rem;
+      padding: 0.4rem 0.8rem;
+    }
+    
+    #birthday-popover {
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      max-width: calc(100vw - 2rem);
+      min-width: calc(100vw - 4rem);
+    }
+
+    .modal-footer {
+      flex-direction: column;
+    }
+
+    .modal-footer button {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 0.75rem;
+      width: calc(100% - 1rem);
+    }
+    
+    .menu-dropdown {
+      min-width: calc(100vw - 2rem);
+      right: -1rem;
+    }
+    
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .fc-event {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* Loading state */
+  .loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* Disabled state for protected content */
+  .content-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .search-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .btn-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .error-message {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+
+  .success-message {
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+</style>
+</link></head>
+<body>
+<!-- Hamburger Menu -->
+<div class="hamburger-menu">
+<button class="hamburger-btn" onclick="toggleMenu()">
+<i class="fas fa-bars"></i>
+</button>
+<div class="menu-dropdown" id="menuDropdown">
+<div id="menu-auth-section">
+<input id="menu-email-input" placeholder="Email" type="email"/>
+<input id="menu-password-input" placeholder="Passwort" type="password"/>
+<button class="menu-item primary" id="menu-login-btn">Login</button>
+<button class="menu-item danger" id="menu-logout-btn" style="display:none;">Logout</button>
+<button class="menu-item" id="menu-change-password-btn">
+<i class="fas fa-key"></i> Passwort ändern
+</button>
+
+
+<hr/>
+<a class="menu-item" href="https://urlaubskalender.github.io/todo/">
+<i class="fas fa-tasks"></i> Zur To-Do Liste
+      </a>
+<a class="menu-item" href="https://urlaubskalender.github.io/Einkaufsliste/">
+<i class="fas fa-shopping-cart"></i> Zur Einkaufsliste
+      </a>
+<a class="menu-item" href="https://urlaubskalender.github.io/Elite" target="_blank">
+<i class="fas fa-search"></i> Zur Urlaubskalender
+      </a>
+<hr/>
+
+
+
+<div id="menu-auth-message" style="color:red; font-size:0.8rem; margin-top:0.5rem;"></div>
+</div>
+<hr/>
+<div id="authenticated-menu" style="display:none;">
+<button class="menu-item success" id="add-birthday-btn">
+<i class="fas fa-user-plus"></i> Geburtstag hinzufügen
+      </button>
+<hr/>
+
+<hr/>
+<button class="menu-item" id="export-csv-btn">
+<i class="fas fa-file-export"></i> Geburtstage als CSV
+      </button>
+<button class="menu-item danger" id="delete-all-btn">
+<i class="fas fa-trash-alt"></i> Alle Geburtstage löschen
+      </button>
+</div>
+</div>
+</div>
+<div class="container">
+<center><h1>Geburtstags-Kalender</h1>
+<div style="font-family: Arial, sans-serif; font-size: 14px; color: #9ca3af;">
+
+</div>
+<div aria-label="Legende" class="legend">
+<div class="legend-item"><span class="color-box" style="background:#10b981;"></span> Geburtstag</div>
+<div class="legend-item"><span class="color-box" style="background:#ef4444;"></span> Heute Geburtstag</div>
+<div class="legend-item"><span class="color-box" style="background:#fbbf24;"></span> Bald Geburtstag</div>
+<div class="legend-item"><span class="color-box" style="background:#fbbf24; border: 3px solid #f59e0b;"></span> Heute</div>
+</div>
+<div class="auth-message-main" id="auth-message-main">
+<i class="fas fa-lock fa-3x" style="margin-bottom: 1rem; color: #fbbf24;"></i>
+<h4>Bitte melden Sie sich an</h4>
+<p>Um Ihre Geburtstage zu verwalten, melden Sie sich über das Menü oben rechts an.Kein Login? kein Problem. Schreibt mir eine email, um eine kleine Spende wurde ich mich freuen. <a href="mailto:vigliotti1@outlook.de">Kontakt</a></p>
+</div><div id="main-content">
+<!-- Search and Filter Section -->
+<div class="search-container">
+<div class="search-grid">
+<div style="position: relative;">
+<i class="fas fa-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #9ca3af;"></i>
+<input id="searchInput" placeholder="Nach Namen suchen..." style="padding-left: 2.5rem;" type="text"/>
+</div>
+<div class="btn-grid">
+<button class="btn-secondary" id="upcoming-btn">
+<i class="fas fa-clock"></i> Kommende
+          </button>
+<button class="btn-secondary" id="list-view-btn">
+<i class="fas fa-list"></i> Liste
+          </button>
+<button class="btn-primary" id="add-birthday-btn-main">
+<i class="fas fa-plus"></i> Hinzufügen
+          </button>
+</div>
+</div>
+</div>
+<!-- Birthday Statistics -->
+<div class="birthday-stats">
+<h5 style="color: #fbbf24; font-size: 1.125rem; margin-bottom: 1rem;">
+<i class="fas fa-chart-bar" style="margin-right: 0.5rem;"></i>
+        Geburtstags-Übersicht
+      </h5>
+<ul id="birthday-overview" style="list-style: none; padding: 0; margin: 0;">
+<!-- Will be populated by JavaScript -->
+</ul>
+</div>
+<!-- Upcoming Birthdays -->
+<div class="birthday-stats" id="upcoming-panel" style="display: none;">
+<h3 style="color: #fbbf24; margin-bottom: 1rem;">
+<i class="fas fa-clock" style="margin-right: 0.5rem;"></i>
+        Kommende Geburtstage
+      </h3>
+<ul id="upcoming-content" style="list-style: none; padding: 0; margin: 0;">
+<!-- Upcoming birthdays will be populated by JavaScript -->
+</ul>
+</div>
+<!-- Year Selector -->
+<div style="text-align: center; margin-bottom: 1.5rem;">
+<label style="font-weight: 600; color: #fbbf24; margin-right: 0.5rem;">Jahr wählen:</label>
+<select id="year-selector" style="display: inline-block; width: auto; min-width: 100px;">
+<!-- Years will be populated by JavaScript -->
+</select>
+</div>
+<!-- Calendar -->
+<div id="calendar-container">
+<div id="calendar"></div>
+</div>
+<!-- List View -->
+<div class="birthday-stats" id="birthday-list" style="display: none;">
+<h3 style="color: #fbbf24; margin-bottom: 1rem;">
+<i class="fas fa-list" style="margin-right: 0.5rem;"></i>
+        Alle Geburtstage
+      </h3>
+<ul id="birthday-list-content" style="list-style: none; padding: 0; margin: 0;">
+<!-- Birthday list will be populated by JavaScript -->
+</ul>
+</div>
+</div>
+<!-- Auth Message (for main content area) -->
+
+<!-- Birthday Popover -->
+<div id="birthday-popover"></div>
+</center></div>
+<!-- Birthday Modal -->
+<div class="modal" id="birthday-modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">
+<i class="fas fa-birthday-cake" style="margin-right: 0.5rem;"></i>
+<span id="modal-title-text">Geburtstag hinzufügen</span>
+</h2>
+</div>
+<div id="modal-message-container"></div>
+<form id="birthday-form">
+<div class="form-group">
+<label for="birthday-name">Name *</label>
+<input id="birthday-name" maxlength="50" placeholder="z.B. Max Mustermann" required="" type="text"/>
+</div>
+<div class="form-group">
+<label for="birthday-date">Geburtsdatum *</label>
+<input id="birthday-date" required="" type="date"/>
+</div>
+<div class="form-group">
+<label for="birthday-notes">Notizen (optional)</label>
+<textarea id="birthday-notes" maxlength="200" placeholder="Zusätzliche Informationen, Geschenkideen..." rows="3"></textarea>
+</div>
+</form>
+<div class="modal-footer">
+<button class="btn-secondary" onclick="closeBirthdayModal()" type="button">
+<i class="fas fa-times"></i> Abbrechen
+      </button>
+<button class="btn-primary" id="save-birthday-btn" type="button">
+<i class="fas fa-save"></i> Speichern
+      </button>
+</div>
+</div>
+</div>
+<!-- FullCalendar -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import { getDatabase, ref, set, get, child, onValue, push } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+
+
+
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAjF0SlQ_wZlGYBIBlL2aVQdvO1kcgi0Us",
+  authDomain: "projekt1-12e20.firebaseapp.com",
+  databaseURL: "https://projekt1-12e20-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "projekt1-12e20",
+  storageBucket: "projekt1-12e20.firebasestorage.app",
+  messagingSenderId: "175090852891",
+  appId: "1:175090852891:web:80b730564b1fd00dcd84be"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+// Global Variables
+let currentUser = null;
+let dbPath = '';
+let birthdays = [];
+let currentYear = new Date().getFullYear();
+let editingBirthdayId = null;
+let showUpcoming = false;
+let showList = false;
+
+// DOM Elements
+const calendarEl = document.getElementById('calendar');
+const birthdayPopover = document.getElementById('birthday-popover');
+const mainContent = document.getElementById('main-content');
+const authMessageMain = document.getElementById('auth-message-main');
+const birthdayModal = document.getElementById('birthday-modal');
+
+// Utility Functions
+function showModalMessage(message, type = 'error') {
+  const container = document.getElementById('modal-message-container');
+  container.innerHTML = `<div class="${type}-message">${message}</div>`;
+  setTimeout(() => {
+    container.innerHTML = '';
+  }, 5000);
+}
+
+function truncateText(text, maxLength = 20) {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+
+// Hamburger Menu Functions
+window.toggleMenu = function() {
+  const dropdown = document.getElementById('menuDropdown');
+  dropdown.classList.toggle('show');
+};
+
+// Close menu when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.querySelector('.hamburger-menu');
+  if (!menu.contains(event.target)) {
+    document.getElementById('menuDropdown').classList.remove('show');
+  }
+});
+
+// Authentication Functions
+const menuLoginBtn = document.getElementById('menu-login-btn');
+const menuLogoutBtn = document.getElementById('menu-logout-btn');
+const menuEmailInput = document.getElementById('menu-email-input');
+const menuPasswordInput = document.getElementById('menu-password-input');
+const menuAuthMessage = document.getElementById('menu-auth-message');
+const authenticatedMenu = document.getElementById('authenticated-menu');
+
+menuLoginBtn.onclick = () => {
+  const email = menuEmailInput.value.trim();
+  const password = menuPasswordInput.value;
+  
+  if (!email || !password) {
+    showAuthMessage('Bitte E-Mail und Passwort eingeben');
+    return;
+  }
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(userCredential => {
+      const uid = userCredential.user.uid;
+      get(child(ref(db), `personZuordnung/${uid}`)).then(snapshot => {
+        if (!snapshot.exists()) {
+          showAuthMessage('Keine Datenbank-Zuordnung vorhanden!');
+          return;
+        }
+        dbPath = snapshot.val();
+        currentUser = userCredential.user;
+        updateAuthUI(true);
+        loadData();
+        document.getElementById('menuDropdown').classList.remove('show');
+      });
+    })
+    .catch(error => {
+      showAuthMessage('Login fehlgeschlagen: ' + error.message);
+    });
+};
+
+menuLogoutBtn.onclick = () => {
+  signOut(auth).then(() => {
+    currentUser = null;
+    dbPath = '';
+    updateAuthUI(false);
+    resetData();
+    document.getElementById('menuDropdown').classList.remove('show');
+  });
+};
+
+function showAuthMessage(message) {
+  menuAuthMessage.textContent = message;
+  setTimeout(() => {
+    menuAuthMessage.textContent = '';
+  }, 4000);
+}
+
+function updateAuthUI(isLoggedIn) {
+  if (isLoggedIn) {
+    menuEmailInput.style.display = 'none';
+    menuPasswordInput.style.display = 'none';
+    menuLoginBtn.style.display = 'none';
+    menuLogoutBtn.style.display = 'block';
+    authenticatedMenu.style.display = 'block';
+    mainContent.classList.remove('content-disabled');
+    authMessageMain.style.display = 'none';
+  } else {
+    menuEmailInput.style.display = 'block';
+    menuPasswordInput.style.display = 'block';
+    menuLoginBtn.style.display = 'block';
+    menuLogoutBtn.style.display = 'none';
+    authenticatedMenu.style.display = 'none';
+    mainContent.classList.add('content-disabled');
+    authMessageMain.style.display = 'block';
+  }
+}
+
+function resetData() {
+  birthdays = [];
+  renderBirthdayStats();
+  renderUpcomingBirthdays();
+  renderBirthdayList();
+  if (calendar) {
+    calendar.removeAllEvents();
+  }
+}
+
+// Auth state observer
+auth.onAuthStateChanged(user => {
+  if (user) {
+    get(child(ref(db), `personZuordnung/${user.uid}`)).then(snapshot => {
+      if (snapshot.exists()) {
+        currentUser = user;
+        dbPath = snapshot.val();
+        updateAuthUI(true);
+        loadData();
+      } else {
+        showAuthMessage('Keine Datenbank-Zuordnung vorhanden!');
+        updateAuthUI(false);
+      }
+    });
+  } else {
+    currentUser = null;
+    dbPath = '';
+    updateAuthUI(false);
+    resetData();
+  }
+});
+
+// FullCalendar initialization
+let calendar;
+
+function initializeCalendar() {
+  if (!window.FullCalendar) {
+    console.error('FullCalendar not loaded');
+    return;
+  }
+  
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'de',
+    height: 'auto',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth'
+    },
+    eventClick: function(info) {
+      showBirthdayPopover(info.event, info.jsEvent);
+    },
+    datesSet: function(dateInfo) {
+      currentYear = dateInfo.view.currentStart.getFullYear();
+      updateYearSelector();
+    }
+  });
+  
+  calendar.render();
+}
+
+// Load data from Firebase - Fixed path structure
+function loadData() {
+  if (!currentUser || !dbPath) return;
+
+  // Use urlaubskalender path structure with geburtstage sub-path
+  const birthdaysRef = ref(db, `urlaubskalender/${dbPath}/geburtstage`);
+  onValue(birthdaysRef, (snapshot) => {
+    const data = snapshot.val();
+    birthdays = [];
+    if (data) {
+      Object.keys(data).forEach(key => {
+        birthdays.push({
+          id: key,
+          ...data[key]
+        });
+      });
+    }
+    renderBirthdayStats();
+    renderUpcomingBirthdays();
+    renderBirthdayList();
+    renderCalendarEvents();
+  });
+}
+
+// Birthday operations - Fixed save path
+function saveBirthday(birthdayData) {
+  if (!dbPath) return Promise.reject('No database path');
+  
+  // Use urlaubskalender path structure
+  const birthdaysRef = ref(db, `urlaubskalender/${dbPath}/geburtstage`);
+  
+  if (editingBirthdayId) {
+    // Update existing birthday
+    return set(child(birthdaysRef, editingBirthdayId), birthdayData);
+  } else {
+    // Create new birthday
+    return push(birthdaysRef, birthdayData);
+  }
+}
+
+function deleteBirthday(birthdayId) {
+  if (!dbPath) return Promise.reject('No database path');
+  
+  const birthdayRef = ref(db, `urlaubskalender/${dbPath}/geburtstage/${birthdayId}`);
+  return set(birthdayRef, null);
+}
+
+function deleteAllBirthdays() {
+  if (!dbPath) return Promise.reject('No database path');
+  
+  const birthdaysRef = ref(db, `urlaubskalender/${dbPath}/geburtstage`);
+  return set(birthdaysRef, null);
+}
+
+// Birthday modal functions
+function openBirthdayModal(birthday = null) {
+  const modal = document.getElementById('birthday-modal');
+  const titleText = document.getElementById('modal-title-text');
+  const nameInput = document.getElementById('birthday-name');
+  const dateInput = document.getElementById('birthday-date');
+  const notesInput = document.getElementById('birthday-notes');
+  
+  if (birthday) {
+    titleText.textContent = 'Geburtstag bearbeiten';
+    nameInput.value = birthday.name;
+    dateInput.value = birthday.date;
+    notesInput.value = birthday.notes || '';
+    editingBirthdayId = birthday.id;
+  } else {
+    titleText.textContent = 'Geburtstag hinzufügen';
+    nameInput.value = '';
+    dateInput.value = '';
+    notesInput.value = '';
+    editingBirthdayId = null;
+  }
+  
+  modal.classList.add('show');
+  nameInput.focus();
+}
+
+window.closeBirthdayModal = function() {
+  document.getElementById('birthday-modal').classList.remove('show');
+  editingBirthdayId = null;
+};
+
+// Birthday form submit
+document.getElementById('save-birthday-btn').onclick = () => {
+  const name = document.getElementById('birthday-name').value.trim();
+  const date = document.getElementById('birthday-date').value;
+  const notes = document.getElementById('birthday-notes').value.trim();
+  
+  if (!name || !date) {
+    showModalMessage('Bitte Name und Datum eingeben');
+    return;
+  }
+  
+  const birthdayData = {
+    name: name,
+    date: date,
+    notes: notes,
+    created: new Date().toISOString()
+  };
+  
+  saveBirthday(birthdayData)
+    .then(() => {
+      closeBirthdayModal();
+      showModalMessage('Geburtstag gespeichert!', 'success');
+    })
+    .catch(error => {
+      showModalMessage('Fehler beim Speichern: ' + error.message);
+    });
+};
+
+// Birthday popover
+function showBirthdayPopover(event, jsEvent) {
+  const birthday = birthdays.find(b => b.id === event.id);
+  if (!birthday) return;
+  
+  const popover = document.getElementById('birthday-popover');
+  const rect = jsEvent.target.getBoundingClientRect();
+  
+  popover.innerHTML = `
+    <strong class="birthday-name">${birthday.name}</strong>
+    <div style="margin-bottom: 1rem;">
+      <div><strong>Datum:</strong> ${formatDate(birthday.date)}</div>
+      <div><strong>Alter:</strong> <span class="age-display">${calculateAge(birthday.date)}</span></div>
+      <div><strong>Tage bis Geburtstag:</strong> <span class="days-until">${calculateDaysUntil(birthday.date)}</span></div>
+      ${birthday.notes ? `<div><strong>Notizen:</strong> ${birthday.notes}</div>` : ''}
+    </div>
+    <button class="btn-primary" onclick="editBirthday('${birthday.id}')">
+      <i class="fas fa-edit"></i> Bearbeiten
+    </button>
+    <button class="btn-danger" onclick="confirmDeleteBirthday('${birthday.id}')">
+      <i class="fas fa-trash"></i> Löschen
+    </button>
+    <button class="btn-secondary" onclick="closeBirthdayPopover()">
+      <i class="fas fa-times"></i> Schließen
+    </button>
+  `;
+  
+  popover.style.left = rect.left + 'px';
+  popover.style.top = (rect.bottom + 10) + 'px';
+  popover.style.display = 'block';
+}
+
+window.closeBirthdayPopover = function() {
+  document.getElementById('birthday-popover').style.display = 'none';
+};
+
+window.editBirthday = function(birthdayId) {
+  const birthday = birthdays.find(b => b.id === birthdayId);
+  if (birthday) {
+    openBirthdayModal(birthday);
+    closeBirthdayPopover();
+  }
+};
+
+window.confirmDeleteBirthday = function(birthdayId) {
+  if (confirm('Möchten Sie diesen Geburtstag wirklich löschen?')) {
+    deleteBirthday(birthdayId)
+      .then(() => {
+        closeBirthdayPopover();
+      })
+      .catch(error => {
+        alert('Fehler beim Löschen: ' + error.message);
+      });
+  }
+};
+
+// Utility functions for date calculations
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+}
+
+function calculateAge(dateString) {
+  const birthDate = new Date(dateString);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+function calculateDaysUntil(dateString) {
+  const birthDate = new Date(dateString);
+  const today = new Date();
+  const thisYear = today.getFullYear();
+  
+  // Set birthday to this year
+  const nextBirthday = new Date(thisYear, birthDate.getMonth(), birthDate.getDate());
+  
+  // If birthday has passed this year, set to next year
+  if (nextBirthday < today) {
+    nextBirthday.setFullYear(thisYear + 1);
+  }
+  
+  const timeDiff = nextBirthday.getTime() - today.getTime();
+  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  
+  return daysDiff;
+}
+
+// Render functions
+function renderBirthdayStats() {
+  const overviewElement = document.getElementById('birthday-overview');
+  if (!overviewElement) return;
+  
+  const total = birthdays.length;
+  const thisMonth = birthdays.filter(b => {
+    const birthDate = new Date(b.date);
+    const today = new Date();
+    return birthDate.getMonth() === today.getMonth();
+  }).length;
+  
+  const upcoming = birthdays.filter(b => {
+    const days = calculateDaysUntil(b.date);
+    return days <= 7;
+  }).length;
+  
+  overviewElement.innerHTML = `
+    <li style="margin-bottom: 0.5rem;">
+      <span style="color: #fbbf24; font-weight: 600;">Gesamt:</span> ${total}
+    </li>
+    <li style="margin-bottom: 0.5rem;">
+      <span style="color: #fbbf24; font-weight: 600;">Diesen Monat:</span> ${thisMonth}
+    </li>
+    <li style="margin-bottom: 0.5rem;">
+      <span style="color: #fbbf24; font-weight: 600;">Nächste 7 Tage:</span> ${upcoming}
+    </li>
+  `;
+}
+
+function renderUpcomingBirthdays() {
+  const upcomingContent = document.getElementById('upcoming-content');
+  if (!upcomingContent) return;
+  
+  const upcoming = birthdays
+    .filter(b => calculateDaysUntil(b.date) <= 30)
+    .sort((a, b) => calculateDaysUntil(a.date) - calculateDaysUntil(b.date));
+  
+  if (upcoming.length === 0) {
+    upcomingContent.innerHTML = '<li style="color: #9ca3af; font-style: italic;">Keine kommenden Geburtstage in den nächsten 30 Tagen</li>';
+    return;
+  }
+  
+  upcomingContent.innerHTML = upcoming.map(birthday => {
+    const days = calculateDaysUntil(birthday.date);
+    const age = calculateAge(birthday.date) + 1;
+    const dayText = days === 0 ? 'Heute!' : days === 1 ? 'Morgen' : `In ${days} Tagen`;
+    
+    return `
+      <li style="margin-bottom: 0.75rem; padding: 0.5rem; background: #3a4556; border-radius: 6px; border-left: 4px solid ${days === 0 ? '#ef4444' : days <= 7 ? '#fbbf24' : '#10b981'};">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong class="birthday-name">${birthday.name}</strong>
+            <div style="color: #9ca3af; font-size: 0.875rem;">
+              ${formatDate(birthday.date)} • wird ${age} Jahre alt
+            </div>
+          </div>
+          <div style="font-weight: 600; color: ${days === 0 ? '#ef4444' : days <= 7 ? '#fbbf24' : '#10b981'};">
+            ${dayText}
+          </div>
+        </div>
+      </li>
+    `;
+  }).join('');
+}
+
+function renderBirthdayList() {
+  const listContent = document.getElementById('birthday-list-content');
+  if (!listContent) return;
+  
+  if (birthdays.length === 0) {
+    listContent.innerHTML = '<li style="color: #9ca3af; font-style: italic;">Keine Geburtstage vorhanden</li>';
+    return;
+  }
+  
+  const sortedBirthdays = [...birthdays].sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateA.getMonth() - dateB.getMonth() || dateA.getDate() - dateB.getDate();
+  });
+  
+  listContent.innerHTML = sortedBirthdays.map(birthday => {
+    const age = calculateAge(birthday.date);
+    const days = calculateDaysUntil(birthday.date);
+    
+    return `
+      <li style="margin-bottom: 0.75rem; padding: 0.75rem; background: #3a4556; border-radius: 6px; cursor: pointer;" onclick="editBirthday('${birthday.id}')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong class="birthday-name">${birthday.name}</strong>
+            <div style="color: #9ca3af; font-size: 0.875rem;">
+              ${formatDate(birthday.date)} • ${age} Jahre alt
+            </div>
+            ${birthday.notes ? `<div style="color: #9ca3af; font-size: 0.8rem; margin-top: 0.25rem;">${birthday.notes}</div>` : ''}
+          </div>
+          <div style="text-align: right;">
+            <div class="days-until">${days === 0 ? 'Heute!' : `${days} Tage`}</div>
+          </div>
+        </div>
+      </li>
+    `;
+  }).join('');
+}
+
+function renderCalendarEvents() {
+  if (!calendar) return;
+  
+  calendar.removeAllEvents();
+  
+  birthdays.forEach(birthday => {
+    const birthDate = new Date(birthday.date);
+    const days = calculateDaysUntil(birthday.date);
+    
+    let eventClass = 'birthday-event';
+    if (days === 0) {
+      eventClass = 'birthday-today';
+    } else if (days <= 7) {
+      eventClass = 'birthday-upcoming';
+    }
+    
+    // Add event for current year
+    const currentYear = new Date().getFullYear();
+    const eventDate = new Date(currentYear, birthDate.getMonth(), birthDate.getDate());
+    
+    calendar.addEvent({
+      id: birthday.id,
+      title: `${birthday.name} (${calculateAge(birthday.date) + 1})`,
+      start: eventDate.toISOString().split('T')[0],
+      allDay: true,
+      className: eventClass
+    });
+    
+    // Add event for next year if we're close to year end
+    if (new Date().getMonth() >= 10) {
+      const nextYear = currentYear + 1;
+      const nextEventDate = new Date(nextYear, birthDate.getMonth(), birthDate.getDate());
+      
+      calendar.addEvent({
+        id: birthday.id + '_next',
+        title: `${birthday.name} (${calculateAge(birthday.date) + 2})`,
+        start: nextEventDate.toISOString().split('T')[0],
+        allDay: true,
+        className: eventClass
+      });
+    }
+  });
+}
+
+function updateYearSelector() {
+  const yearSelector = document.getElementById('year-selector');
+  if (!yearSelector) return;
+  
+  const currentYear = new Date().getFullYear();
+  yearSelector.innerHTML = '';
+  
+  for (let year = currentYear - 5; year <= currentYear + 5; year++) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    if (year === currentYear) {
+      option.selected = true;
+    }
+    yearSelector.appendChild(option);
+  }
+}
+
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const searchTerm = e.target.value.toLowerCase();
+  
+  if (searchTerm === '') {
+    renderBirthdayList();
+    return;
+  }
+  
+  const filteredBirthdays = birthdays.filter(birthday => 
+    birthday.name.toLowerCase().includes(searchTerm) ||
+    (birthday.notes && birthday.notes.toLowerCase().includes(searchTerm))
+  );
+  
+  const listContent = document.getElementById('birthday-list-content');
+  if (filteredBirthdays.length === 0) {
+    listContent.innerHTML = '<li style="color: #9ca3af; font-style: italic;">Keine Geburtstage gefunden</li>';
+    return;
+  }
+  
+  listContent.innerHTML = filteredBirthdays.map(birthday => {
+    const age = calculateAge(birthday.date);
+    const days = calculateDaysUntil(birthday.date);
+    
+    return `
+      <li style="margin-bottom: 0.75rem; padding: 0.75rem; background: #3a4556; border-radius: 6px; cursor: pointer;" onclick="editBirthday('${birthday.id}')">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <strong class="birthday-name">${birthday.name}</strong>
+            <div style="color: #9ca3af; font-size: 0.875rem;">
+              ${formatDate(birthday.date)} • ${age} Jahre alt
+            </div>
+            ${birthday.notes ? `<div style="color: #9ca3af; font-size: 0.8rem; margin-top: 0.25rem;">${birthday.notes}</div>` : ''}
+          </div>
+          <div style="text-align: right;">
+            <div class="days-until">${days === 0 ? 'Heute!' : `${days} Tage`}</div>
+          </div>
+        </div>
+      </li>
+    `;
+  }).join('');
+});
+
+// View toggle functionality
+document.getElementById('upcoming-btn').addEventListener('click', function() {
+  const upcomingPanel = document.getElementById('upcoming-panel');
+  const calendarContainer = document.getElementById('calendar-container');
+  const birthdayList = document.getElementById('birthday-list');
+  
+  showUpcoming = !showUpcoming;
+  showList = false;
+  
+  if (showUpcoming) {
+    upcomingPanel.style.display = 'block';
+    calendarContainer.style.display = 'none';
+    birthdayList.style.display = 'none';
+    this.textContent = 'Kalender';
+    this.innerHTML = '<i class="fas fa-calendar"></i> Kalender';
+  } else {
+    upcomingPanel.style.display = 'none';
+    calendarContainer.style.display = 'block';
+    birthdayList.style.display = 'none';
+    this.innerHTML = '<i class="fas fa-clock"></i> Kommende';
+  }
+  
+  document.getElementById('list-view-btn').innerHTML = '<i class="fas fa-list"></i> Liste';
+});
+
+document.getElementById('list-view-btn').addEventListener('click', function() {
+  const birthdayList = document.getElementById('birthday-list');
+  const calendarContainer = document.getElementById('calendar-container');
+  const upcomingPanel = document.getElementById('upcoming-panel');
+  
+  showList = !showList;
+  showUpcoming = false;
+  
+  if (showList) {
+    birthdayList.style.display = 'block';
+    calendarContainer.style.display = 'none';
+    upcomingPanel.style.display = 'none';
+    this.innerHTML = '<i class="fas fa-calendar"></i> Kalender';
+  } else {
+    birthdayList.style.display = 'none';
+    calendarContainer.style.display = 'block';
+    upcomingPanel.style.display = 'none';
+    this.innerHTML = '<i class="fas fa-list"></i> Liste';
+  }
+  
+  document.getElementById('upcoming-btn').innerHTML = '<i class="fas fa-clock"></i> Kommende';
+});
+
+// Add birthday button handlers
+document.getElementById('add-birthday-btn').addEventListener('click', function() {
+  openBirthdayModal();
+  document.getElementById('menuDropdown').classList.remove('show');
+});
+
+document.getElementById('add-birthday-btn-main').addEventListener('click', function() {
+  openBirthdayModal();
+});
+
+// Export CSV functionality
+document.getElementById('export-csv-btn').addEventListener('click', function() {
+  if (birthdays.length === 0) {
+    alert('Keine Geburtstage zum Exportieren vorhanden');
+    return;
+  }
+  
+  const csvContent = 'Name,Datum,Alter,Notizen\n' + 
+    birthdays.map(b => `"${b.name}","${b.date}","${calculateAge(b.date)}","${b.notes || ''}"`).join('\n');
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'geburtstage.csv';
+  link.click();
+  
+  document.getElementById('menuDropdown').classList.remove('show');
+});
+
+
+
+
+document.getElementById('menu-change-password-btn').addEventListener('click', () => {
+  if (!currentUser || !currentUser.email) {
+    alert('Sie müssen eingeloggt sein, um das Passwort zu ändern.');
+    return;
+  }
+
+  const confirmed = confirm(`Soll ein Link zum Zurücksetzen des Passworts an ${currentUser.email} gesendet werden?`);
+  if (!confirmed) return;
+
+  sendPasswordResetEmail(auth, currentUser.email)
+    .then(() => {
+      alert('Ein Link zum Zurücksetzen des Passworts wurde gesendet.');
+      document.getElementById('menuDropdown').classList.remove('show');
+    })
+    .catch((error) => {
+      alert('Fehler beim Senden des Links: ' + error.message);
+    });
+});
+
+
+
+// Delete all functionality
+document.getElementById('delete-all-btn').addEventListener('click', function() {
+  if (confirm('Möchten Sie wirklich ALLE Geburtstage löschen? Diese Aktion kann nicht rückgängig gemacht werden!')) {
+    deleteAllBirthdays()
+      .then(() => {
+        alert('Alle Geburtstage wurden gelöscht');
+        document.getElementById('menuDropdown').classList.remove('show');
+      })
+      .catch(error => {
+        alert('Fehler beim Löschen: ' + error.message);
+      });
+  }
+});
+
+// Year selector functionality
+document.getElementById('year-selector').addEventListener('change', function() {
+  const selectedYear = parseInt(this.value);
+  const date = new Date(selectedYear, 0, 1);
+  calendar.gotoDate(date);
+});
+
+// Modal close functionality
+document.addEventListener('click', function(event) {
+  if (event.target.classList.contains('modal')) {
+    event.target.classList.remove('show');
+  }
+});
+
+// Close popover when clicking outside
+document.addEventListener('click', function(event) {
+  const popover = document.getElementById('birthday-popover');
+  if (popover.style.display === 'block' && !popover.contains(event.target)) {
+    if (!event.target.closest('.fc-event')) {
+      closeBirthdayPopover();
+    }
+  }
+});
+
+// Initialize calendar when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  initializeCalendar();
+  updateYearSelector();
+});
+
+</script>
+</body>
+</html>
